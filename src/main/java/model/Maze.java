@@ -2,27 +2,30 @@ package model;
 
 import controler.MazeGenerationStrategy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Maze {
 
     int width;
-    int length;
+    int height;
     Field[][] mazeMap;
     MazeGenerationStrategy mazeGenerationStrategy;
 
     private Maze(MazeBuilder builder) {
-        this.length = builder.length;
+        this.height = builder.height;
         this.width = builder.width;
         mazeGenerationStrategy = builder.mazeGenerationStrategy;
-        mazeMap = mazeGenerationStrategy.generateMaze(this.width, this.length);
+        mazeMap = mazeGenerationStrategy.generateMaze(this.width, this.height);
     }
 
     public static class MazeBuilder {
-        private int width, length;
+        private int width, height;
         private Field[][] mazeMap;
         private MazeGenerationStrategy mazeGenerationStrategy;
 
-        public void withSize(int width, int length) {
-            this.length = length;
+        public void withSize(int width, int height) {
+            this.height = height;
             this.width = width;
         }
 
@@ -35,14 +38,25 @@ public class Maze {
         }
     }
 
-    // TODO: Change to map with directions as keys
-    public Field[] findNeighbours(int positionX, int positionY) {
-        Field[] neighbours = new Field[4];
-        neighbours[0] = findNeighbour(Direction.NORTH, positionX, positionY);
-        neighbours[1] = findNeighbour(Direction.EAST, positionX, positionY);
-        neighbours[2] = findNeighbour(Direction.SOUTH, positionX, positionY);
-        neighbours[3] = findNeighbour(Direction.WEST, positionX, positionY);
+    public Map<Direction, Field> findNeighbours(int positionX, int positionY) {
+        Map<Direction, Field> neighbours = new HashMap<>();
+        for (Direction direction : Direction.values()) {
+            neighbours.put(direction, findNeighbour(direction, positionX, positionY));
+        }
         return neighbours;
+    }
+
+    public void displayMaze() {
+        for (int row = 0; row < this.height; row++) {
+            for (int column = 0; column < this.width; column++) {
+                getFieldFromMap(column, row).print();
+            }
+            printNewLine();
+        }
+    }
+
+    private void printNewLine() {
+        System.out.print(System.lineSeparator());
     }
 
 
@@ -59,7 +73,7 @@ public class Maze {
         return coordinateX < 0 ||
                 coordinateX >= this.width ||
                 coordinateY < 0 ||
-                coordinateY >= this.length;
+                coordinateY >= this.height;
     }
 
     private Field getFieldFromMap(int positionX, int positionY) {

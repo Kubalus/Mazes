@@ -1,6 +1,6 @@
 package model;
 
-import controler.MazeSolvingStrategy;
+import controler.solving.MazeSolvingStrategy;
 
 public class Agent {
 
